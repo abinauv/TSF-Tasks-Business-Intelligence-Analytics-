@@ -1,0 +1,93 @@
+
+# Reading the data from the provided link & storing it in a variable
+
+```{r}
+dataset <- read.csv("http://bit.ly/w-data")
+```
+
+# Plotting the data to check if hours & scores are linearly related
+
+```{r}
+plot(dataset$Hours,dataset$Scores,xlab = "Hours Studied",ylab = "Percentage Score",
+     main = "Hours vs Percentage")
+```
+
+# Since the scatterplot is linear, we can use linear regression to predict the scores
+
+# splitting the data into training set and test set
+
+```{r}
+library(caTools)
+set.seed(123)
+split = sample.split(dataset$Scores, SplitRatio = 0.8)
+training_set = subset(dataset, split == TRUE)
+test_set = subset(dataset, split == FALSE)
+```
+
+# Fitting Simple Linear Regression to the Training set
+
+```{r}
+regressor = lm(formula = Scores ~ Hours,
+               data = training_set)
+```
+
+# Predicting the Test set results
+
+```{r}
+y_pred = predict(regressor, newdata = test_set)
+```
+
+# Visualising the Training set results
+
+```{r}
+library(ggplot2)
+ggplot() +
+  geom_point(aes(x = training_set$Hours, y = training_set$Scores),
+             colour = 'red') +
+  geom_line(aes(x = training_set$Hours, y = predict(regressor, newdata = training_set)),
+            colour = 'blue') +
+  ggtitle('Score vs Hours (Training set)') +
+  xlab('Hours Studied') +
+  ylab('Percentage Score')
+```
+
+# Visualising the Test set results
+
+```{r}
+library(ggplot2)
+ggplot() +
+  geom_point(aes(x = test_set$Hours, y = test_set$Scores),
+             colour = 'red') +
+  geom_line(aes(x = training_set$Hours, y = predict(regressor, newdata = training_set)),
+            colour = 'blue') +
+  ggtitle('Score vs Hours (Test set)') +
+  xlab('Hours Studied') +
+  ylab('Percentage Score')
+```
+
+# Predicting the score for 9.25 hours spent (question)
+
+```{r}
+newset <- data.frame("Hours"=9.25,"Scores"=0)
+own_score_prediction <- predict(regressor,newdata = newset)
+newset <- data.frame("Hours"=9.25,"Scores"=own_score_prediction)
+print(newset)
+```
+
+# Plotting the predicted result against the regression line
+
+```{r}
+ggplot() +
+  geom_point(aes(x = training_set$Hours, y = training_set$Scores),
+             colour = 'black') +
+  geom_point(aes(x = test_set$Hours, y = test_set$Scores),
+             colour = 'blue') +
+  geom_point(aes(x = newset$Hours, y = newset$Scores),
+             colour = 'red',size=7) +
+  geom_line(aes(x = training_set$Hours, y = predict(regressor, newdata = training_set)),
+            colour = 'blue') +
+  ggtitle('Score vs Hours (Test set)') +
+  xlab('Hours Studied') +
+  ylab('Percentage Score')
+```
+
