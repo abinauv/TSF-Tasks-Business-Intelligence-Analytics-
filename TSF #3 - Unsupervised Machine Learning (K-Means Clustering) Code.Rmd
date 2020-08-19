@@ -1,0 +1,57 @@
+# K-Means Clustering
+
+# importing the necessary libraries
+
+```{r}
+library(cluster)
+```
+
+# Importing the dataset
+
+```{r}
+dataset = read.csv('Iris.csv')
+
+```
+
+# Using the elbow method to find the optimal number of clusters
+
+```{r}
+set.seed(6)
+wcss = vector()
+for (i in 1:10) wcss[i] = sum(kmeans(dataset[,2:5], i)$withinss)
+```
+
+# plotting the wcss to identify the optimum number of clusters
+
+```{r}
+plot(1:10,
+     wcss,
+     type = 'b',
+     main = paste('The Elbow Method'),
+     xlab = 'Number of clusters',
+     ylab = 'WCSS')
+```
+
+# Fitting K-Means to the dataset
+
+```{r}
+set.seed(29)
+kmeans = kmeans(x = dataset[,2:5], centers = 3)
+y_kmeans = kmeans$cluster
+```
+
+
+# Visualising the clusters
+
+```{r}
+clusplot(dataset,
+         y_kmeans,
+         lines = 0,
+         shade = T,
+         color = TRUE,
+         labels = 1,
+         plotchar = T,
+         span = TRUE,
+         main = paste('Clusters'))
+```
+
